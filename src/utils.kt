@@ -14,3 +14,13 @@ fun areBracketsValid(code: String): Boolean {
 
     return open == 0
 }
+
+fun simplify(code: String): String {
+    val instructions = arrayOf('+', '-', '<', '>', '.', ',', '[', ']')
+    var result = ""
+
+    for (c in code)
+        if (instructions.contains(c)) result += c
+
+    return result
+}
