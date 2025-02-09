@@ -1,6 +1,6 @@
-import java.io.File;
 import java.io.IOException;
-import java.util.Scanner;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class Main {
     public static void main(String[] args) {
@@ -48,12 +48,8 @@ public class Main {
         }
     }
 
-    private static String read(String path) throws IOException {
-        File file = new File(path);
-        if (!file.canRead()) throw new IOException();
-        Scanner scanner = new Scanner(file);
-
-        return scanner.next();
+    public static String read(String path) throws IOException {
+       return Files.readString(Paths.get(path));
     }
 
     private static String getNextArg(String[] args, int i) {
