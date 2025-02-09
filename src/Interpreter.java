@@ -44,7 +44,7 @@ public class Interpreter {
     }
 
     private void minus() {
-        if (memory[index] == Character.MIN_VALUE)
+        if (memory[index] == 0)
             memory[index] = Character.MAX_VALUE;
         else
             memory[index]--;
