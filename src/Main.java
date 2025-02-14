@@ -1,7 +1,3 @@
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 public class Main {
     public static void main(String[] args) {
         String path = "";
@@ -31,25 +27,14 @@ public class Main {
             System.exit(1);
         }
         try {
-            String text = read(path);
-            Interpreter i = new Interpreter(length, text.toCharArray());
-            try {
-                i.execute();
-            } catch (IOException io) {
-                System.err.println("Error: Cannot get user input!");
-                System.exit(1);
-            } catch (BracketException b) {
-                System.err.println("Error: " + b.getMessage() + "\n\tat: " + b.getPosition());
-                System.exit(1);
-            }
-        } catch (IOException e) {
-            System.err.println("Error: Cannot read the file: " + path);
+            Interpreter i = new Interpreter(path, length);
+            i.execute();
+        }catch (BracketException b) {
+            System.err.println("Error: " + b.getMessage() + "\n\tat: ");
             System.exit(1);
+        }catch (InterpretationException e){
+            System.out.println("Error: " + e.getMessage() + "\n\tat: ");
         }
-    }
-
-    public static String read(String path) throws IOException {
-       return Files.readString(Paths.get(path));
     }
 
     private static String getNextArg(String[] args, int i) {
