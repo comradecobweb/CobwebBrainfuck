@@ -17,7 +17,7 @@ public class Compiler {
         } catch (IOException | SecurityException e) {
             throw new CompilationException("Cannot read file: " + path);
         }
-        if (!Utils.areBracketsValid(code)) throw new BracketException("Invalid brackets!", -1);
+        if (!Utils.areBracketsValid(code)) throw new BracketException(code);
         code = Utils.simplify(code);
         tab = "\t";
         newLine = "\n";
@@ -31,7 +31,7 @@ public class Compiler {
         } catch (IOException | SecurityException e) {
             throw new CompilationException("Cannot read file: " + path);
         }
-        if (!Utils.areBracketsValid(code)) throw new BracketException("Invalid brackets!", -1);
+        if (!Utils.areBracketsValid(code)) throw new BracketException(code);
         code = Utils.simplify(code);
         this.tab = tab;
         this.newLine = newLine;
