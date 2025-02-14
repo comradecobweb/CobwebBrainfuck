@@ -7,7 +7,6 @@ class BracketException(code: String) : Exception() {
         var open = 0
         for (c in code) {
             if (c == '\n') {
-                println("New line")
                 column = 0
                 line++
                 break
