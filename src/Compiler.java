@@ -1,6 +1,4 @@
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -40,23 +38,28 @@ public class Compiler {
         output = "";
     }
 
-    private String readTemplate() throws IOException, OutOfMemoryError, SecurityException {
-        return Files.readString(Paths.get("res/" + templateFileName));
+    private String readTemplate() throws ResourceException, OutOfMemoryError {
+        StringBuilder template = new StringBuilder();
+        String line;
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(templateFileName)));
+            while ((line = reader.readLine()) != null) {
+                template.append(line).append(newLine);
+            }
+        } catch (IOException | SecurityException | NullPointerException e) {
+            throw new ResourceException("Cannot open " + templateFileName + " file!");
+        }
+
+        return template.toString();
     }
 
     public void compile() throws ResourceException {
-        try {
-            String rawTemplate = readTemplate();
-            if (!newLine.equals("\n"))
-                rawTemplate = rawTemplate.replace("\n", newLine);
-            if (!tab.equals("\t"))
-                rawTemplate = rawTemplate.replace("\t", tab);
-            String[] template = rawTemplate.split("//here");
-            if (template.length != 2) throw new ResourceException("Invalid " + templateFileName + " file!");
-            output = template[0] + getBody() + template[1];
-        } catch (IOException | SecurityException e) {
-            throw new ResourceException("Cannot open " + templateFileName + " file!");
-        }
+        String rawTemplate = readTemplate();
+        if (!tab.equals("\t"))
+            rawTemplate = rawTemplate.replace("\t", tab);
+        String[] template = rawTemplate.split("//here");
+        if (template.length != 2) throw new ResourceException("Invalid " + templateFileName + " file!");
+        output = template[0] + getBody() + template[1];
     }
 
     public void save(String path) throws ResourceException, CompilationException {
