@@ -1,5 +1,1 @@
-public class InterpretationException extends Exception {
-    public InterpretationException(String message) {
-        super(message);
-    }
-}
+class InterpretationException(message: String): Exception(message)
