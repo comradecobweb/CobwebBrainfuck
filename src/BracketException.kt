@@ -1,13 +1,21 @@
-public class BracketException extends Exception {
+class BracketException(code: String) : Exception() {
+    override val message: String
+    init {
+        var column = 1
+        var line = 1
 
-    private final int position;
-
-    public BracketException(String message, int position) {
-        super(message);
-        this.position = position;
-    }
-
-    public int getPosition() {
-        return position;
+        var open = 0
+        for (c in code) {
+            if (c == '\n') {
+                println("New line")
+                column = 0
+                line++
+                break
+            } else if (c == '[') open++
+            else if (open == 0 && c == ']') break
+            else if (c == ']') open--
+            column++
+        }
+        message = "Invalid bracket at line $line, column $column"
     }
 }
