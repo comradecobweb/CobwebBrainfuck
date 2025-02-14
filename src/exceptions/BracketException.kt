@@ -1,3 +1,5 @@
+package exceptions
+
 class BracketException(code: String) : Exception() {
     override val message: String
     init {
