@@ -8,9 +8,9 @@ public class Interpreter {
     private final Stack<Integer> leftBracketPositions = new Stack<>();
 
     public Interpreter(int memoryLength, char[] instructions) {
-        if (memoryLength < 2) memoryLength = 1000;
+        if (memoryLength < 2) memoryLength = 30000;
         memory = new char[memoryLength];
-        index = memoryLength / 2;
+        index = 0;
         this.instructions = instructions;
     }
 
