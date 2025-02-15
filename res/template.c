@@ -32,7 +32,7 @@ void dot();
  * Brackets:
  *
  * while(memory[memory_pointer]) {
- *   some code
+ *	some code
  * }
  */
 
@@ -40,48 +40,48 @@ int memory_pointer;
 char *memory;
 
 int main(void) {
-    memory = (char *) malloc(sizeof memory * MEMORY_SIZE);
-    if (!memory) {
-        puts("Error: could not allocate memory!\n");
-        return -1;
-    }
-    memory_pointer = 0;
+	memory = (char *) malloc(sizeof memory * MEMORY_SIZE);
+	if (!memory) {
+		puts("Error: could not allocate memory!\n");
+		return -1;
+	}
+	memory_pointer = 0;
 //here
-    return 0;
+	return 0;
 }
 
 void plus() {
-    if (memory[memory_pointer] == CHAR_MAX)
-        memory[memory_pointer] = 0;
-    else
-        memory[memory_pointer]++;
+	if (memory[memory_pointer] == CHAR_MAX)
+		memory[memory_pointer] = 0;
+	else
+		memory[memory_pointer]++;
 }
 
 void minus() {
-    if (memory[memory_pointer] == 0)
-        memory[memory_pointer] = CHAR_MAX;
-    else
-        memory[memory_pointer]--;
+	if (memory[memory_pointer] == 0)
+		memory[memory_pointer] = CHAR_MAX;
+	else
+		memory[memory_pointer]--;
 }
 
 void left_arrow() {
-    if (memory_pointer == 0)
-        memory_pointer = MEMORY_SIZE - 1;
-    else
-        memory_pointer--;
+	if (memory_pointer == 0)
+		memory_pointer = MEMORY_SIZE - 1;
+	else
+		memory_pointer--;
 }
 
 void right_arrow() {
-    if (memory_pointer == MEMORY_SIZE - 1)
-        memory_pointer = 0;
-    else
-        memory_pointer++;
+	if (memory_pointer == MEMORY_SIZE - 1)
+		memory_pointer = 0;
+	else
+		memory_pointer++;
 }
 
 void comma() {
-    scanf("%c", &memory[memory_pointer]);
+	scanf("%c", &memory[memory_pointer]);
 }
 
 void dot() {
-    putchar(memory[memory_pointer]);
+	putchar(memory[memory_pointer]);
 }
