@@ -47,4 +47,4 @@ Sets the pointer value to the position of the nearest previous `[`.
 
 ### About brackets
 
-Each `[` must be matched by a `]`. Parentheses can be nested. A right parenthesis `]` cannot appear before a left `[`.
+Each `[` must be matched by a `]`. Brackets can be nested. A right bracket `]` cannot appear before a left `[`.
