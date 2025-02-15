@@ -1,3 +1,4 @@
+import exceptions.ArgumentException;
 import exceptions.BracketException;
 import exceptions.InterpretationException;
 
@@ -12,7 +13,8 @@ public class Interpreter {
     private int index;
     private final Stack<Integer> leftBracketPositions = new Stack<>();
 
-    public Interpreter(String path, int memoryLength) throws BracketException, InterpretationException {
+    public Interpreter(String path, int memoryLength) throws ArgumentException, BracketException, InterpretationException {
+        if (path.isEmpty()) throw new ArgumentException("Input path is not defined!");
         String code;
         try {
             code = Files.readString(Paths.get(path));
@@ -72,7 +74,7 @@ public class Interpreter {
         return -1;
     }
 
-    public void execute() throws BracketException, InterpretationException {
+    public void execute() throws InterpretationException {
         for (int i = 0; i < instructions.length; i++)
             switch (instructions[i]) {
                 case '+':

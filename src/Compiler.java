@@ -1,3 +1,4 @@
+import exceptions.ArgumentException;
 import exceptions.BracketException;
 import exceptions.CompilationException;
 import exceptions.ResourceException;
@@ -5,6 +6,7 @@ import exceptions.ResourceException;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Objects;
 
 public class Compiler {
     private String code;
@@ -15,7 +17,8 @@ public class Compiler {
     private static final String templateFileName = templateName + ".c";
     private String output;
 
-    public Compiler(String path) throws BracketException, CompilationException, OutOfMemoryError {
+    public Compiler(String path) throws BracketException, CompilationException, ArgumentException, OutOfMemoryError {
+        if (path.isEmpty()) throw new ArgumentException("Input path is not defined!");
         try {
             code = Files.readString(Paths.get(path));
         } catch (IOException | SecurityException e) {
@@ -29,7 +32,8 @@ public class Compiler {
     }
 
     public Compiler(String path, String tab, String newLine) throws BracketException, CompilationException,
-            OutOfMemoryError {
+            ArgumentException, OutOfMemoryError {
+        if (path.isEmpty()) throw new ArgumentException("Input path is not defined!");
         try {
             code = Files.readString(Paths.get(path));
         } catch (IOException | SecurityException e) {
@@ -46,7 +50,7 @@ public class Compiler {
         StringBuilder template = new StringBuilder();
         String line;
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(templateFileName)));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(getClass().getResourceAsStream(templateFileName))));
             while ((line = reader.readLine()) != null) {
                 template.append(line).append(newLine);
             }
@@ -66,9 +70,9 @@ public class Compiler {
         output = template[0] + getBody() + template[1];
     }
 
-    public void save(String path) throws ResourceException, CompilationException {
+    public void save(String path) throws ResourceException, ArgumentException, CompilationException {
         if (!output.isEmpty()) compile();
-        if (path.isEmpty()) throw new CompilationException("Output path is empty!");
+        if (path.isEmpty()) throw new ArgumentException("Output path is not defined!");
         if (!path.endsWith(".c")) path += ".c";
 
         File file = new File(path);
