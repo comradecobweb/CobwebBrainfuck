@@ -1,4 +1,10 @@
+import exceptions.ArgumentException;
+import exceptions.BracketException;
+import exceptions.InterpretationException;
+
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Stack;
 
 public class Interpreter {
@@ -7,15 +13,27 @@ public class Interpreter {
     private int index;
     private final Stack<Integer> leftBracketPositions = new Stack<>();
 
-    public Interpreter(int memoryLength, char[] instructions) {
-        if (memoryLength < 2) memoryLength = 1000;
+    public Interpreter(String path, int memoryLength) throws ArgumentException, BracketException, InterpretationException {
+        if (path.isEmpty()) throw new ArgumentException("Input path is not defined!");
+        String code;
+        try {
+            code = Files.readString(Paths.get(path));
+        } catch (IOException e) {
+            throw new InterpretationException("Cannot read file: " + path);
+        }
+        if (!Utils.areBracketsValid(code)) throw new BracketException(code);
+        if (memoryLength < 2) memoryLength = 30000;
         memory = new char[memoryLength];
-        index = memoryLength / 2;
-        this.instructions = instructions;
+        index = 0;
+        instructions = Utils.simplify(code).toCharArray();
     }
 
-    private void comma() throws IOException {
-        memory[index] = (char) System.in.read();
+    private void comma() throws InterpretationException {
+        try {
+            memory[index] = (char) System.in.read();
+        } catch (IOException e) {
+            throw new InterpretationException("Cannot get input from user!");
+        }
     }
 
     private void dot() {
@@ -50,13 +68,13 @@ public class Interpreter {
             memory[index]--;
     }
 
-    private int getNextRightBracket(int position) throws BracketException {
+    private int getNextRightBracket(int position) {
         for (int i = position; i < instructions.length; i++)
             if (instructions[i] == ']') return i;
-        throw new BracketException("No right bracket found to end loop!", instructions.length);
+        return -1;
     }
 
-    public void execute() throws BracketException, IOException {
+    public void execute() throws InterpretationException {
         for (int i = 0; i < instructions.length; i++)
             switch (instructions[i]) {
                 case '+':
@@ -84,8 +102,6 @@ public class Interpreter {
                         leftBracketPositions.push(i - 1); // - 1 because of i++
                     break;
                 case ']':
-                    if (leftBracketPositions.isEmpty())
-                        throw new BracketException("No left bracket found to end loop!", i);
                     i = leftBracketPositions.pop();
                     break;
             }
