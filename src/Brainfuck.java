@@ -55,6 +55,11 @@ public class Brainfuck extends Application {
                 case "c", "-c", "--c", "compile", "-compile", "--compile":
                     mode = Modes.compilation;
                     break;
+                case "h", "-h", "--h", "help", "-help", "--help":
+                    System.out.println("Cobweb Brainfuck");
+                    System.out.println("For more info see: https://github.com/comradecobweb/CobwebBrainfuck");
+                    System.exit(0);
+                    break;
                 default:
                     throw new ArgumentException("Unknown argument: " + arguments[position]);
             }
