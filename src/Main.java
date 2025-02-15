@@ -1,13 +1,19 @@
-import exceptions.ArgumentException;
-import exceptions.BracketException;
-import exceptions.InterpretationException;
+import exceptions.*;
 
-public class Main extends Application{
+public class Main extends Application {
     public static void main(String[] args) {
         try {
             new Main(args).run();
-        }catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (ArgumentException | InterpretationException | BracketException | CompilationException e) {
+            System.err.println(e.getMessage());
+        } catch (OutOfMemoryError e) {
+            System.err.println("Out of memory!");
+            System.out.println("To fix it run this program by:");
+            System.out.println("java -jar CobwebBrainfuck.jar -Xmx?G ...");
+            System.out.println("Replace the ? with the number of gigabytes of memory that the program can use (default 2).");
+        } catch (ResourceException e) {
+            System.err.println(e.getMessage());
+            System.out.println("The application is corrupted. Download it from: https://github.com/comradecobweb/CobwebBrainfuck");
         }
     }
 
@@ -16,34 +22,45 @@ public class Main extends Application{
     }
 
     @Override
-    public void run() throws ArgumentException {
-        String path = "";
+    public void run() throws ArgumentException, BracketException, InterpretationException, CompilationException,
+            ResourceException {
+        String source = "";
+        String destination = "";
         int length = 0;
+        Modes mode = Modes.undefined;
         for (; position < arguments.length; position++)
-             switch (arguments[position]) {
+            switch (arguments[position]) {
                 case "memory", "-memory", "--memory", "mem", "-mem", "--mem":
-                    length = getNextInt();
+                    if (mode == Modes.interpretation) length = getNextInt();
+                    else throw new ArgumentException("Memory can only be adjusted in interpretation mode!");
                     break;
-                case "path", "-path", "--path":
-                    path = getNextArgument();
+                case "source", "-source", "--source":
+                    source = getNextArgument();
+                    break;
+                case "destination", "-destination", "--destination":
+                    if (mode == Modes.compilation)
+                        destination = getNextArgument();
+                    else
+                        throw new ArgumentException("You can only set destination in compile mode!");
+                    break;
+                case "i", "-i", "--i", "interpret", "-interpret", "--interpret":
+                    mode = Modes.interpretation;
+                    break;
+                case "c", "-c", "--c", "compile", "-compile", "--compile":
+                    mode = Modes.compilation;
                     break;
                 default:
-                    System.exit(1);
+                    throw new ArgumentException("Unknown argument: " + arguments[position]);
             }
-        run(path, length);
-    }
 
-    private static void run(String path, int length) {
-        if (path.isEmpty()) {
-            System.err.println("Error: Input file is not specified!");
-            System.exit(1);
-        }
-        try {
-            Interpreter i = new Interpreter(path, length);
-            i.execute();
-        }catch (BracketException | InterpretationException b) {
-            System.err.println("Error: " + b.getMessage());
-            System.exit(1);
+        switch (mode) {
+            case interpretation -> new Interpreter(source, length).execute();
+            case compilation -> {
+                Compiler c = new Compiler(source);
+                c.compile();
+                c.save(destination);
+            }
+            case undefined -> throw new ArgumentException("Mode is not defined!");
         }
     }
 }
