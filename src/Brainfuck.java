@@ -1,9 +1,9 @@
 import exceptions.*;
 
-public class Main extends Application {
+public class Brainfuck extends Application {
     public static void main(String[] args) {
         try {
-            new Main(args).run();
+            new Brainfuck(args).run();
         } catch (ArgumentException | InterpretationException | BracketException | CompilationException e) {
             System.err.println(e.getMessage());
             System.exit(1);
@@ -23,7 +23,7 @@ public class Main extends Application {
         }
     }
 
-    Main(String[] args) {
+    Brainfuck(String[] args) {
         super(args);
     }
 
