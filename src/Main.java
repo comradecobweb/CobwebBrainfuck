@@ -6,14 +6,20 @@ public class Main extends Application {
             new Main(args).run();
         } catch (ArgumentException | InterpretationException | BracketException | CompilationException e) {
             System.err.println(e.getMessage());
+            System.exit(1);
         } catch (OutOfMemoryError e) {
             System.err.println("Out of memory!");
             System.out.println("To fix it run this program by:");
             System.out.println("java -jar CobwebBrainfuck.jar -Xmx?G ...");
             System.out.println("Replace the ? with the number of gigabytes of memory that the program can use (default 2).");
+            System.exit(1);
         } catch (ResourceException e) {
             System.err.println(e.getMessage());
             System.out.println("The application is corrupted. Download it from: https://github.com/comradecobweb/CobwebBrainfuck");
+            System.exit(1);
+        } catch (Exception e) {
+            System.err.println("Unexpected error: " + e.getMessage());
+            System.exit(1);
         }
     }
 
@@ -52,11 +58,10 @@ public class Main extends Application {
                 default:
                     throw new ArgumentException("Unknown argument: " + arguments[position]);
             }
-
         switch (mode) {
             case interpretation -> new Interpreter(source, length).execute();
             case compilation -> {
-                Compiler c = new Compiler(source);
+                Compiler c = new Compiler(source, "    ", "\n");
                 c.compile();
                 c.save(destination);
             }
