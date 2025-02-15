@@ -11,7 +11,7 @@ public abstract class Application {
 
     protected String getNextArgument() throws ArgumentException {
         position++;
-        if (position == arguments.length - 1)
+        if (position == arguments.length)
             throw new ArgumentException("Value for argument " + arguments[position - 1] + " not specified!");
 
         return arguments[position];
@@ -28,5 +28,5 @@ public abstract class Application {
         return value;
     }
 
-    public abstract void run();
+    public abstract void run() throws Exception;
 }
