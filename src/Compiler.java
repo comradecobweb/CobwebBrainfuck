@@ -14,24 +14,12 @@ public class Compiler {
     private final String newLine;
     private int inBracket = 0;
     private static final String templateName = "template";
-    private static final String templateFileName = templateName + ".c";
+    private final String templateFileName;
     private String output;
+    private final Instructions instructions;
+    private final String extension;
 
-    public Compiler(String path) throws BracketException, CompilationException, ArgumentException, OutOfMemoryError {
-        if (path.isEmpty()) throw new ArgumentException("Input path is not defined!");
-        try {
-            code = Files.readString(Paths.get(path));
-        } catch (IOException | SecurityException e) {
-            throw new CompilationException("Cannot read file: " + path);
-        }
-        if (!Utils.areBracketsValid(code)) throw new BracketException(code);
-        code = Utils.simplify(code);
-        tab = "\t";
-        newLine = "\n";
-        output = "";
-    }
-
-    public Compiler(String path, String tab, String newLine) throws BracketException, CompilationException,
+    public Compiler(String path, String tab, String newLine, String extension, Instructions instructions) throws BracketException, CompilationException,
             ArgumentException, OutOfMemoryError {
         if (path.isEmpty()) throw new ArgumentException("Input path is not defined!");
         try {
@@ -44,6 +32,18 @@ public class Compiler {
         this.tab = tab;
         this.newLine = newLine;
         output = "";
+        templateFileName = templateName + extension;
+        this.extension = extension;
+        this.instructions = instructions;
+    }
+
+    public static String getExtension(String path) throws ArgumentException {
+        if (path.isEmpty()) throw new ArgumentException("Output path is not defined!");
+        if (!path.contains(".")) throw new ArgumentException("Output path is not defined!");
+        String extension = path.substring(path.lastIndexOf("."));
+        if (extension.isEmpty() || extension.equals("."))
+            throw new ArgumentException("Extension of file " + path + " is not defined!");
+        return extension;
     }
 
     private String readTemplate() throws ResourceException, OutOfMemoryError {
@@ -73,7 +73,7 @@ public class Compiler {
     public void save(String path) throws ResourceException, ArgumentException, CompilationException {
         if (!output.isEmpty()) compile();
         if (path.isEmpty()) throw new ArgumentException("Output path is not defined!");
-        if (!path.endsWith(".c")) path += ".c";
+        if (!path.endsWith(extension)) path += extension;
 
         File file = new File(path);
 
@@ -83,9 +83,9 @@ public class Compiler {
             throw new CompilationException("Cannot create file: " + path);
         }
 
-        String name = path.substring(0, path.lastIndexOf(".c"));
-        if (path.contains("/")) name = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf(".c"));
-        if (path.contains("\\")) name = path.substring(path.lastIndexOf("\\") + 1, path.lastIndexOf(".c"));
+        String name = path.substring(0, path.lastIndexOf(extension));
+        if (path.contains("/")) name = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf(extension));
+        if (path.contains("\\")) name = path.substring(path.lastIndexOf("\\") + 1, path.lastIndexOf(extension));
         output = output.replace(templateName, name);
 
         try {
@@ -103,8 +103,8 @@ public class Compiler {
         System.out.println(output);
     }
 
-    private String addLine(String text, String line) {
-        StringBuilder result = new StringBuilder(text + newLine + tab);
+    private String addLine(String rawBody, String line) {
+        StringBuilder result = new StringBuilder(rawBody + newLine + tab);
         if (inBracket != 0)
             result.append(String.valueOf(tab).repeat(inBracket));
         result.append(line);
@@ -114,43 +114,28 @@ public class Compiler {
 
     private String getBody() {
         String body = "";
-        String plus = "plus();";
-        String minus = "minus();";
-        String leftArrow = "left_arrow();";
-        String rightArrow = "right_arrow();";
-        String dot = "dot();";
-        String comma = "comma();";
-        String leftBracket = "while(memory[memory_pointer]) {";
-        String rightBracket = "};";
-
         for (char c : code.toCharArray())
             switch (c) {
-                case '+':
-                    body = addLine(body, plus);
-                    break;
-                case '-':
-                    body = addLine(body, minus);
-                    break;
-                case '<':
-                    body = addLine(body, leftArrow);
-                    break;
-                case '>':
-                    body = addLine(body, rightArrow);
-                    break;
-                case '.':
-                    body = addLine(body, dot);
-                    break;
-                case ',':
-                    body = addLine(body, comma);
-                    break;
-                case '[':
-                    body = addLine(body, leftBracket);
+                case '+' -> body = addLine(body, instructions.getPlus());
+
+                case '-' -> body = addLine(body, instructions.getMinus());
+
+                case '<' -> body = addLine(body, instructions.getLeftArrow());
+
+                case '>' -> body = addLine(body, instructions.getRightArrow());
+
+                case '.' -> body = addLine(body, instructions.getDot());
+
+                case ',' -> body = addLine(body, instructions.getComma());
+
+                case '[' -> {
+                    body = addLine(body, instructions.getLeftBracket());
                     inBracket++;
-                    break;
-                case ']':
+                }
+                case ']' -> {
                     inBracket--;
-                    body = addLine(body, rightBracket);
-                    break;
+                    body = addLine(body, instructions.getRightBracket());
+                }
             }
         inBracket = 0;
         body = addLine(body, "");
