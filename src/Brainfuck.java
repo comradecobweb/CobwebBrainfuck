@@ -66,9 +66,14 @@ public class Brainfuck extends Application {
         switch (mode) {
             case interpretation -> new Interpreter(source, length).execute();
             case compilation -> {
-                Compiler c = new Compiler(source, "    ", "\n");
-                c.compile();
-                c.save(destination);
+                Compiler compiler;
+                String extension = Compiler.getExtension(destination);
+                switch (extension) {
+                    case ".c" -> compiler = new C(source, "    ", "\n");
+                    default -> throw new ArgumentException("Unsupported file extension: " + extension);
+                }
+                compiler.compile();
+                compiler.save(destination);
             }
             case undefined -> throw new ArgumentException("Mode is not defined!");
         }
