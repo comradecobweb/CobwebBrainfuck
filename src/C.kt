@@ -6,7 +6,7 @@ class C(path: String, tab: String = "    ", newLine: String = "\n") :
             "left_arrow();",
             "right_arrow();",
             "comma();",
-            "dot()",
+            "dot();",
             "while(memory[memory_pointer]) {",
             "};"
         )
