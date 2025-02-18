@@ -13,13 +13,12 @@ public class Compiler {
     private final String tab;
     private final String newLine;
     private int inBracket = 0;
-    private static final String templateName = "template";
     private final String templateFileName;
     private String output;
     private final Instructions instructions;
     private final String extension;
 
-    public Compiler(String path, String tab, String newLine, String extension, Instructions instructions) throws BracketException, CompilationException,
+    public Compiler(String path, String tab, String newLine, String templateFileName, Instructions instructions) throws BracketException, CompilationException,
             ArgumentException, OutOfMemoryError {
         if (path.isEmpty()) throw new ArgumentException("Input path is not defined!");
         try {
@@ -32,8 +31,8 @@ public class Compiler {
         this.tab = tab;
         this.newLine = newLine;
         output = "";
-        templateFileName = templateName + extension;
-        this.extension = extension;
+        this.templateFileName = templateFileName;
+        this.extension = getExtension(templateFileName);
         this.instructions = instructions;
     }
 
@@ -84,6 +83,7 @@ public class Compiler {
         }
 
         String name = path.substring(0, path.lastIndexOf(extension));
+        String templateName = templateFileName.substring(0, templateFileName.lastIndexOf(extension));
         if (path.contains("/")) name = path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf(extension));
         if (path.contains("\\")) name = path.substring(path.lastIndexOf("\\") + 1, path.lastIndexOf(extension));
         output = output.replace(templateName, name);
